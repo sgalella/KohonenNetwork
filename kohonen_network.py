@@ -63,7 +63,7 @@ class KohonenNetwork:
                     for neuron in row:
                         neuron.update_weights(X, row_min, col_min, learning_rate, sigma)
 
-    def plot(self, data, labels, **kwargs):
+    def plot(self, data, **kwargs):
         weights = []
         for row in range(self.rows):
             for col in range(self.cols):
@@ -71,7 +71,8 @@ class KohonenNetwork:
                 weights.append(neuron.W)
         kmeans = KMeans(**kwargs).fit(weights)
         labels = kmeans.labels_
-        plt.imshow(np.reshape(labels, (self.rows, self.cols)))
+        plt.imshow(np.reshape(labels, (self.rows, self.cols)), cmap='brg')
+        plt.axis('off')
         plt.show()
 
 
@@ -84,12 +85,11 @@ def main():
     df = iris.data
     norm_df = (df - df.mean()) / df.std()
     data = norm_df.to_numpy()
-    label = iris.target.to_numpy().astype(str)
 
     # Run Kohonen Map
     kohonen = KohonenNetwork(rows=20, cols=20)
     kohonen.train(data, num_epochs=250)
-    kohonen.plot(data, label, n_clusters=3)
+    kohonen.plot(data, n_clusters=3)
 
 
 if __name__ == '__main__':
