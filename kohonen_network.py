@@ -18,7 +18,7 @@ class KohonenNeuron:
         return np.linalg.norm(self.W - X)
 
     def update_weights(self, X, row_min, col_min, learning_rate=0.1, sigma=1):
-        d = abs(self.row - row_min) + abs(self.col - col_min)
+        d = max(abs(self.row - row_min), abs(self.col - col_min))
         damping = np.exp(- (d ** 2) / (2 * sigma ** 2))
         self.W += learning_rate * damping * (X - self.W)
 
