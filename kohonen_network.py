@@ -129,23 +129,56 @@ class KohonenNetwork:
                     for neuron in row:
                         neuron.update_weights(X, row_min, col_min, learning_rate, sigma)
 
-    def plot(self, data, **kwargs):
+    def plot(self, data, labels, labels_names, method='nearest', **kwargs):
         """
-        Plots the network. Uses K-Means to clusterize the weights.
+        Plots the network. Uses K-Means or KNN to clusterize the weights.
 
         Args:
             data (np.array): Data where each row is an instance and each column a feature.
         """
-        weights = []
-        for row in range(self.rows):
-            for col in range(self.cols):
-                neuron = self.grid[row][col]
-                weights.append(neuron.W)
-        kmeans = KMeans(**kwargs).fit(weights)
-        labels = kmeans.labels_
-        plt.imshow(np.reshape(labels, (self.rows, self.cols)), cmap='brg')
+        if method == 'kmeans':
+            weights = []
+            for row in range(self.rows):
+                for col in range(self.cols):
+                    neuron = self.grid[row][col]
+                    weights.append(neuron.W)
+            kmeans = KMeans(**kwargs).fit(weights)
+            labels = kmeans.labels_
+            plt.imshow(np.reshape(labels, (self.rows, self.cols)), cmap='brg')
+        elif method == 'nearest':
+            clusters = np.full((self.rows, self.cols), np.nan)
+            d = {}
+            for X, y in zip(data, labels):
+                distance = self._compute_global_distance(X)
+                row_min, col_min = self._get_coord_min(distance)
+                if (row_min, col_min) in d:
+                    d[(row_min, col_min)].append(y)
+                else:
+                    d[(row_min, col_min)] = [y]
+            for row, col in d:
+                clusters[row][col] = np.mean(d[(row, col)])
+            for row, col in np.argwhere(np.isnan(clusters)):
+                neighbors = get_neighbors(row, col)
+                count = 0
+                value = 0
+                for row_n, col_n in neighbors:
+                    if row_n >= 0 and col_n >= 0 and row_n < self.rows and col_n < self.cols and not np.isnan(clusters[row_n][col_n]):
+                        count += 1
+                        value += clusters[row_n][col_n]
+                if count:
+                    clusters[row][col] = value / count
+            plt.imshow(clusters, cmap='brg')
+        cbar = plt.colorbar()
+        cbar.set_ticks(range(len(labels_names)))
+        cbar.set_ticklabels(labels_names)
         plt.axis('off')
-        plt.show()
+
+
+def get_neighbors(row, col):
+    """ Returns the coordinates of the neighbors. """
+    return [(row - 1, col - 1), (row - 1, col), (row - 1, col + 1),
+            (row, col - 1), (row, col + 1),
+            (row + 1, col - 1), (row + 1, col), (row + 1, col + 1)]
 
 
 def main():
@@ -157,11 +190,14 @@ def main():
     df = iris.data
     norm_df = (df - df.mean()) / df.std()
     data = norm_df.to_numpy()
+    labels = iris.target.to_numpy()
+    labels_names = iris.target_names
 
     # Run Kohonen Map
     kohonen = KohonenNetwork(rows=20, cols=20)
-    kohonen.train(data, num_epochs=250)
-    kohonen.plot(data, n_clusters=3)
+    kohonen.train(data, num_epochs=200)
+    kohonen.plot(data, labels, labels_names, n_clusters=3)
+    plt.show()
 
 
 if __name__ == '__main__':
