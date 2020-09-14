@@ -107,7 +107,7 @@ class KohonenNetwork:
         """
         return np.unravel_index(distance.argmin(), distance.shape)
 
-    def train(self, data, num_epochs=10, initial_learning_rate=0.1, initial_sigma=1):
+    def train(self, data, num_epochs=10, initial_learning_rate=1, initial_sigma=2):
         """
         Runs the Kohonen network.
 

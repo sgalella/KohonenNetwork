@@ -1,6 +1,15 @@
 # Kohonen Network
 Self-organizing map (SOM) for visualizing multidimensional data in a 2D grid. The default example uses the [Iris flower dataset](https://en.wikipedia.org/wiki/Iris_flower_data_set).
 
+<p align="center">
+  <img width="400" height="332" src="images/kohonen_10.png">
+  <img width="400" height="332" src="images/kohonen_20.png">
+  <img width="400" height="332" src="images/kohonen_40.png">
+</p>
+
+
+These embeddings were made with learning rate of 1, radius of 2 and 100 iterations.
+
 
 
 ## Installation
