@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn import datasets
 from sklearn.cluster import KMeans
 from tqdm import tqdm
+
+from .utils import get_neighbors
 
 
 class KohonenNeuron:
@@ -172,33 +173,3 @@ class KohonenNetwork:
         cbar.set_ticks(range(len(labels_names)))
         cbar.set_ticklabels(labels_names)
         plt.axis('off')
-
-
-def get_neighbors(row, col):
-    """ Returns the coordinates of the neighbors. """
-    return [(row - 1, col - 1), (row - 1, col), (row - 1, col + 1),
-            (row, col - 1), (row, col + 1),
-            (row + 1, col - 1), (row + 1, col), (row + 1, col + 1)]
-
-
-def main():
-    # Random seed for reproducibility
-    np.random.seed(1234)
-
-    # Load iris dataset
-    iris = datasets.load_iris(as_frame=True)
-    df = iris.data
-    norm_df = (df - df.mean()) / df.std()
-    data = norm_df.to_numpy()
-    labels = iris.target.to_numpy()
-    labels_names = iris.target_names
-
-    # Run Kohonen Map
-    kohonen = KohonenNetwork(rows=20, cols=20)
-    kohonen.train(data, num_epochs=200)
-    kohonen.plot(data, labels, labels_names, n_clusters=3)
-    plt.show()
-
-
-if __name__ == '__main__':
-    main()
