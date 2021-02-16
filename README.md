@@ -20,6 +20,17 @@ To install the dependencies, run the following command:
 pip install -r requirements.txt
 ```
 
+If using Conda, you can also create an environment with the requirements:
+
+```bash
+conda env create -f environment.yml
+```
+
+By default the environment name is `kohonen-network`. To activate it run:
+
+```bash
+conda activate kohonen-network
+```
 
 
 ## Usage
@@ -27,6 +38,6 @@ pip install -r requirements.txt
 Run the algorithm from the command line with:
 
 ```python
-python kohenen_network.py
+python kohonen_network.py
 ```
 
