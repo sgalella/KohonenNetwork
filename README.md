@@ -38,6 +38,6 @@ conda activate kohonen-network
 Run the algorithm from the command line with:
 
 ```python
-python kohonen_network.py
+python -m kohonen_network
 ```
 
